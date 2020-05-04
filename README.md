@@ -1,0 +1,1 @@
+# fristcocos2dx
