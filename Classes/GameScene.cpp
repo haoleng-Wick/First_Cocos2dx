@@ -255,7 +255,7 @@ void GameScene::update(float delta) {
         }
         while ( gameover && player->getPositionX()>400+ori_size.x
                     && player->getPositionX()<450+ori_size.x
-                    && player->getPositionY()<=50){         //主角进入传送门的判断
+                    && player->getPositionY()<=50){         //主角到达传送门的判断
 
             player_win = true;
             auto player2=Sprite::create("000.png");
