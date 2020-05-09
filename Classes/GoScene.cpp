@@ -19,7 +19,7 @@ Scene* GoScene::createScene() {
 bool GoScene::init() {
     auto Listener =EventListenerTouchOneByOne::create();
     Listener->onTouchBegan = [this](Touch* touch,Event* event){
-        if(count<=100){
+        if(count<=60){
                 count++;
             auto ve = Vec2(touch->getLocation().x,touch->getLocation().y);
             auto select = random(1,50);
