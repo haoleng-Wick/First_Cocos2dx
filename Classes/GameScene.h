@@ -21,6 +21,7 @@ private:
     b2World *world;
     cocos2d::Sprite* player;
     cocos2d::Sprite* bg1;
+    cocos2d::Sprite* ground;
     cocos2d::Label* label;
     int score;
 

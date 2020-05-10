@@ -16,7 +16,7 @@ Scene* GameScene::createScene() {
 }
 bool GameScene::init() {
     this->scheduleUpdate();
-    srand(time(NULL));  //随机种子
+    srand(static_cast<unsigned int>(time(NULL)));  //随机种子
     score =0;
     world =new b2World(b2Vec2(0,-2.0f));
 //    world = Box2DHelper::createWorld();
@@ -122,7 +122,7 @@ void GameScene::addBar(int i) {
         int r = random(10,225);
         int g = random(1,214);
         int b = random(1,225);
-        bar->setColor(Color3B(r,g,b));
+            bar->setColor(Color3B(r,g,b));
     if(i!=2){
         Box2DHelper::createBar(world,random(bar->getContentSize().width/2*1.25f,vis_size.width-bar->getContentSize().width/2*1.25f),
                 15+i*(vis_size.height/5),
@@ -154,7 +154,7 @@ void GameScene::addDoor() {
 }
 
 void GameScene::add_Dead_field() {
-    auto ground = Sprite::create("ground.png");
+    ground = Sprite::create("ground.png");
     ground->setPosition(vis_size.width/2,2);
     this->addChild(ground,2);
     Box2DHelper::createDeadborder(world,vis_size.width/2,0,vis_size.width,20, true, ground);
@@ -171,9 +171,9 @@ void GameScene::BeginContact(b2Contact *contact) {
                 isContacted=true;
             if(spriteA==player) barsprite=spriteB;
             else barsprite =spriteA;
-            while (barsprite->getColor()!=Color3B(225,215,0)){
+            while (barsprite->getColor()!=Color3B(225,215,0) && barsprite!=ground){
                 SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
-                barsprite->setColor(Color3B(225,215,0));
+                    barsprite->setColor(Color3B(225,215,0));
                 score++;
                 char str[100] = {'0'};
                 sprintf(str,"Score:%d",score);

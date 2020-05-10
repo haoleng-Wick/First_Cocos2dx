@@ -19,19 +19,24 @@ Scene* GoScene::createScene() {
 bool GoScene::init() {
     auto Listener =EventListenerTouchOneByOne::create();
     Listener->onTouchBegan = [this](Touch* touch,Event* event){
+        touch_begin=Vec2(touch->getLocation().x,touch->getLocation().y);
+        return true;
+    };
+    Listener->onTouchEnded=[this](Touch* touch,Event *event){
+        touch_end=Vec2(touch->getLocation().x,touch->getLocation().y);
         if(count<=60){
-                count++;
-            auto ve = Vec2(touch->getLocation().x,touch->getLocation().y);
+            count++;
+            auto ve = touch_end-touch_begin;
             auto select = random(1,50);
             int num = select%4;
             if(num == 0)
-                add_ball(ve);
+                add_ball(touch_begin,ve);
             else if(num == 1)
-                add_bar(ve);
+                add_bar(touch_begin,ve);
             else if(num == 2)
-                add_box(ve);
+                add_box(touch_begin,ve);
             else if(num == 3)
-                add_wubianxing(ve);
+                add_wubianxing(touch_begin,ve);
         } else{
             Start_gravity();
         }
@@ -54,38 +59,41 @@ void GoScene::onEnter() {
     add_edge();
 }
 
-void GoScene::add_bar(Vec2 vec2) {
+void GoScene::add_bar(Vec2 vec1,Vec2 vec2) {
     auto bar = Sprite::create("bar.png");
     auto bar_body = PhysicsBody::createBox(bar->getContentSize(),
             PhysicsMaterial(3.0f,0.8f,0.6f));
     bar_body->setDynamic(true);
+    bar_body->setVelocity(vec2);
 
     bar->setPhysicsBody(bar_body);
-    bar->setPosition(vec2);
+    bar->setPosition(vec1);
     this->addChild(bar);
 }
-void GoScene::add_ball(Vec2 vec2) {
+void GoScene::add_ball(Vec2 vec1,Vec2 vec2) {
     auto ball = Sprite::create("basketball.png");
     ball->setScale(0.5f);
     auto ball_body = PhysicsBody::createCircle(ball->getContentSize().width/2,
                                             PhysicsMaterial(1.5f,0.8f,0.2f));
     ball_body->setDynamic(true);
+    ball_body->setVelocity(vec2);
 
     ball->setPhysicsBody(ball_body);
-    ball->setPosition(vec2);
+    ball->setPosition(vec1);
     this->addChild(ball);
 }
-void GoScene::add_box(cocos2d::Vec2 vec2) {
+void GoScene::add_box(Vec2 vec1,Vec2 vec2) {
     auto box = Sprite::create("smile.png");
     auto box_body = PhysicsBody::createBox(box->getContentSize(),
             PhysicsMaterial(3.0f,0.7f,0.4f));
     box_body->setDynamic(true);
+    box_body->setVelocity(vec2);
 
     box->setPhysicsBody(box_body);
-    box->setPosition(vec2);
+    box->setPosition(vec1);
     this->addChild(box);
 }
-void GoScene::add_wubianxing(cocos2d::Vec2 vec2) {
+void GoScene::add_wubianxing(Vec2 vec1,Vec2 vec2) {
     auto sjx = Sprite::create("sjx.png");
     float x = sjx->getContentSize().width;
     float y = sjx->getContentSize().height;
@@ -96,8 +104,10 @@ void GoScene::add_wubianxing(cocos2d::Vec2 vec2) {
     };
     auto sjx_body = PhysicsBody::createPolygon(vertex,3,PhysicsMaterial(2.5f,0.7f,0.5f));
     sjx_body->setDynamic(true);
+    sjx_body->setVelocity(vec2);
+
     sjx->setPhysicsBody(sjx_body);
-    sjx->setPosition(vec2);
+    sjx->setPosition(vec1);
     this->addChild(sjx);
 }
 
