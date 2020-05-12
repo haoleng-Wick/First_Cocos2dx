@@ -48,7 +48,7 @@ bool GoScene::init() {
                 add_box(add_Position,ve);
             else if(num == 3)
                 add_wubianxing(add_Position,ve);
-        } else{
+        } else if(count==101){
             Start_gravity();
         }
         return true;
@@ -232,7 +232,8 @@ void GoScene::add_edge() {
 }
 
 void GoScene::Start_gravity() {
-        simpleAudioEngine->playBackgroundMusic("music/welcome_bgm.mp3",false);
+        count=102;
+        simpleAudioEngine->playBackgroundMusic("music/welcome_bgm.mp3", false);
         mlabel->setVisible(false);
         arrow1->setVisible(false); arrow2->setVisible(false); arrow3->setVisible(false);
         ParticleSystem* ps = ParticleRain::create();
