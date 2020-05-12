@@ -175,7 +175,7 @@ void GameScene::BeginContact(b2Contact *contact) {
                 SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
                     barsprite->setColor(Color3B(225,215,0));
                 score++;
-                char str[100] = {'0'};
+                char str[128] = {'0'};
                 sprintf(str,"Score:%d",score);
                 label->setString(str);
                 label->setVisible(true);

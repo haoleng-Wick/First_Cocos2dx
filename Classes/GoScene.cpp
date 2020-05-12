@@ -17,6 +17,17 @@ Scene* GoScene::createScene() {
 }
 
 bool GoScene::init() {
+    mlabel = Label::createWithTTF("0","fonts/comicz.ttf",20);
+    mlabel->setColor(Color3B::GREEN);
+    mlabel->setPosition(origin_size+Vec2(vis_size.width/2,vis_size.height-100));
+    char x = 'o';
+    sprintf(buffer,"Let's G%c",x);
+    mlabel->setString(buffer);
+    mlabel->setVisible(true);
+    this->addChild(mlabel,2);
+
+    simpleAudioEngine = SimpleAudioEngine::getInstance();
+    simpleAudioEngine->stopBackgroundMusic();
     auto Listener =EventListenerTouchOneByOne::create();
     Listener->onTouchBegan = [this](Touch* touch,Event* event){
         touch_begin=Vec2(touch->getLocation().x,touch->getLocation().y);
@@ -24,19 +35,19 @@ bool GoScene::init() {
     };
     Listener->onTouchEnded=[this](Touch* touch,Event *event){
         touch_end=Vec2(touch->getLocation().x,touch->getLocation().y);
-        if(count<=60){
+        if(count<=100){
             count++;
             auto ve = touch_end-touch_begin;
             auto select = random(1,50);
             int num = select%4;
             if(num == 0)
-                add_ball(touch_begin,ve);
+                add_ball(add_Position,ve);
             else if(num == 1)
-                add_bar(touch_begin,ve);
+                add_bar(add_Position,ve);
             else if(num == 2)
-                add_box(touch_begin,ve);
+                add_box(add_Position,ve);
             else if(num == 3)
-                add_wubianxing(touch_begin,ve);
+                add_wubianxing(add_Position,ve);
         } else{
             Start_gravity();
         }
@@ -49,22 +60,117 @@ bool GoScene::init() {
                                                             this->getScene()->getPhysicsWorld()->setGravity(vec2*500);
                                                             return true;
                                                         });
+    auto contact_listener=EventListenerPhysicsContact::create();
+    contact_listener->onContactBegin = [this](PhysicsContact& contact){
+        if(count<=100){
+            auto spriteA= contact.getShapeA()->getBody()->getNode();
+            auto spriteB= contact.getShapeB()->getBody()->getNode();
+            if(spriteA && spriteB){
+                if(spriteA->getTag()==666) {
+                    spriteB->runAction(Sequence::create(FadeOut::create(1), RemoveSelf::create(true),CallFunc::create(std::bind( &GoScene::music, this)), NULL));
+                }else if(spriteB->getTag()==666) {
+                    spriteA->runAction(Sequence::create(FadeOut::create(1), RemoveSelf::create(true), CallFunc::create(std::bind( &GoScene::music, this)),NULL));
+                }
+            }
+        }
+        return true;
+    };
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(contact_listener,this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(_LListener, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(Listener,this);
     return true;
 }
+void GoScene::music() {
+    score++;
+    if(score ==1){
+        sprintf(buffer,"%d person was sent away",score);
+    }else if(score >=2 && score <15){
+        sprintf(buffer,"just %d people were sent away",score);
+    }else if(score>=15 && score <30){
+        mlabel->setColor(Color3B::RED);
+        sprintf(buffer,"wa ,%d people were sent away",score);
+    }else{
+        mlabel->setColor(Color3B::YELLOW);
+        sprintf(buffer,"Cool,%d people",score);
+    }
+    mlabel->setString(buffer);
+
+    simpleAudioEngine->playEffect("music/good.mp3",false);
+        auto rand = random(0,3);
+        if(rand==0){add_Position=origin_size+Vec2(10,vis_size.height-20);
+                arrow1->setVisible(true);arrow2->setVisible(false);arrow3->setVisible(false);}
+        else if(rand==1){add_Position=origin_size+Vec2(10,vis_size.height/2-20);
+            arrow1->setVisible(false);arrow2->setVisible(true);arrow3->setVisible(false);}
+        else {add_Position=origin_size+Vec2(vis_size.width-10,vis_size.height-20);
+            arrow1->setVisible(false);arrow2->setVisible(false);arrow3->setVisible(true);}
+}
 void GoScene::onEnter() {
     Layer::onEnter();
-
     add_edge();
+    add_hole();
+    add_arrows();
+}
+void GoScene::add_arrows() {
+    arrow1 = Sprite::create("go.png");
+    arrow2 = Sprite::create("go.png");
+    arrow3 = Sprite::create("go.png");
+
+    arrow2->setVisible(false);
+    arrow3->setVisible(false);
+    arrow3->setScaleX(-1);
+    arrow1->setPosition(origin_size+Vec2(10,vis_size.height-20));
+    arrow2->setPosition(origin_size+Vec2(10,vis_size.height/2-20));
+    arrow3->setPosition(origin_size+Vec2(vis_size.width-10,vis_size.height-20));
+
+    this->addChild(arrow1);this->addChild(arrow2);this->addChild(arrow3);
+}
+
+void GoScene::add_hole() {
+    auto wood2 = Sprite::create("wood2.png");
+    auto wood3 = Sprite::create("wood2.png");
+    auto hole = Sprite::create("CloseNormal.png");
+    hole->setTag(666);
+    wood2->setScaleY(2.0f);
+    wood3->setScaleY(2.0f);
+    wood2->runAction(RotateBy::create(0,-15));
+    wood3->runAction(RotateBy::create(0,15));
+    auto hole_body = PhysicsBody::createCircle(hole->getContentSize().width/2);
+    auto wood2_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
+    auto wood3_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
+    hole_body->setDynamic(false);
+    wood2_body->setDynamic(false);
+    wood3_body->setDynamic(false);
+    hole_body->setContactTestBitmask(0x66);
+    wood2_body->setContactTestBitmask(0x66);
+    wood3_body->setContactTestBitmask(0x66);
+
+    hole->setPhysicsBody(hole_body);
+    wood2->setPhysicsBody(wood2_body);
+    wood3->setPhysicsBody(wood3_body);
+    hole->setPosition(origin_size+Vec2(vis_size.width-80,vis_size.height/2-45));
+    Hole_Position= origin_size+Vec2(vis_size.width-80,vis_size.height/2);
+    wood2->setPosition(Hole_Position+Vec2(-30,17));
+    wood3->setPosition(wood2->getPosition()+Vec2(65,0));
+    this->addChild(hole);
+    this->addChild(wood2);
+    this->addChild(wood3);
+    hole->setVisible(false);
+
+    ParticleSystem* smoke = ParticleSmoke ::create();
+    smoke->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
+    smoke->setPosition(Hole_Position-Vec2(0,40));
+    this->addChild(smoke);
+
 }
 
 void GoScene::add_bar(Vec2 vec1,Vec2 vec2) {
     auto bar = Sprite::create("bar.png");
+    bar->setScale(0.5f);
     auto bar_body = PhysicsBody::createBox(bar->getContentSize(),
             PhysicsMaterial(3.0f,0.8f,0.6f));
     bar_body->setDynamic(true);
     bar_body->setVelocity(vec2);
+    bar_body->setContactTestBitmask(0x65);
 
     bar->setPhysicsBody(bar_body);
     bar->setPosition(vec1);
@@ -72,11 +178,12 @@ void GoScene::add_bar(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_ball(Vec2 vec1,Vec2 vec2) {
     auto ball = Sprite::create("basketball.png");
-    ball->setScale(0.5f);
+    ball->setScale(0.25f);
     auto ball_body = PhysicsBody::createCircle(ball->getContentSize().width/2,
                                             PhysicsMaterial(1.5f,0.8f,0.2f));
     ball_body->setDynamic(true);
     ball_body->setVelocity(vec2);
+    ball_body->setContactTestBitmask(0x65);
 
     ball->setPhysicsBody(ball_body);
     ball->setPosition(vec1);
@@ -84,10 +191,12 @@ void GoScene::add_ball(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_box(Vec2 vec1,Vec2 vec2) {
     auto box = Sprite::create("smile.png");
+    box->setScale(0.5f);
     auto box_body = PhysicsBody::createBox(box->getContentSize(),
             PhysicsMaterial(3.0f,0.7f,0.4f));
     box_body->setDynamic(true);
     box_body->setVelocity(vec2);
+    box_body->setContactTestBitmask(0x65);
 
     box->setPhysicsBody(box_body);
     box->setPosition(vec1);
@@ -95,6 +204,7 @@ void GoScene::add_box(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_wubianxing(Vec2 vec1,Vec2 vec2) {
     auto sjx = Sprite::create("sjx.png");
+    sjx->setScale(0.5f);
     float x = sjx->getContentSize().width;
     float y = sjx->getContentSize().height;
     Point vertex[] ={
@@ -105,6 +215,7 @@ void GoScene::add_wubianxing(Vec2 vec1,Vec2 vec2) {
     auto sjx_body = PhysicsBody::createPolygon(vertex,3,PhysicsMaterial(2.5f,0.7f,0.5f));
     sjx_body->setDynamic(true);
     sjx_body->setVelocity(vec2);
+    sjx_body->setContactTestBitmask(0x65);
 
     sjx->setPhysicsBody(sjx_body);
     sjx->setPosition(vec1);
@@ -121,6 +232,9 @@ void GoScene::add_edge() {
 }
 
 void GoScene::Start_gravity() {
+        simpleAudioEngine->playBackgroundMusic("music/welcome_bgm.mp3",false);
+        mlabel->setVisible(false);
+        arrow1->setVisible(false); arrow2->setVisible(false); arrow3->setVisible(false);
         ParticleSystem* ps = ParticleRain::create();
         ps->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
         ps->setPosition(Vec2(vis_size.width/2+origin_size.x,

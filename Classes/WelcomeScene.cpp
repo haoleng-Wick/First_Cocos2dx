@@ -41,6 +41,7 @@ void WelcomeScene::init_music() {
     _engine->preloadEffect("music/bt.mp3");
     _engine->preloadEffect("music/down.ogg");
     _engine->preloadEffect("music/fail.mp3");
+    _engine->preloadEffect("music/good.mp3");
 
     _engine->playBackgroundMusic("music/welcome_bgm.mp3",_loop);
 }
