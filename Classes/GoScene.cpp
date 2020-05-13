@@ -17,6 +17,14 @@ Scene* GoScene::createScene() {
 }
 
 bool GoScene::init() {
+
+    auto ExitItem = MenuItemFont::create("Back",CC_CALLBACK_1(GoScene::Go_back,this));
+    ExitItem->setColor(Color3B::GRAY);
+    ExitItem->setPosition(origin_size+Vec2(vis_size.width-66,30));
+    auto Menu = Menu::create(ExitItem,NULL);
+    Menu->setPosition(Vec2::ZERO);
+    this->addChild(Menu,2);
+
     mlabel = Label::createWithTTF("0","fonts/comicz.ttf",20);
     mlabel->setColor(Color3B::GREEN);
     mlabel->setPosition(origin_size+Vec2(vis_size.width/2,vis_size.height-100));
@@ -126,39 +134,40 @@ void GoScene::add_arrows() {
 }
 
 void GoScene::add_hole() {
-    auto wood2 = Sprite::create("wood2.png");
-    auto wood3 = Sprite::create("wood2.png");
-    auto hole = Sprite::create("CloseNormal.png");
-    hole->setTag(666);
+    auto wood2 = Sprite::create("wood.png");
+    auto wood3 = Sprite::create("wood.png");
+    auto bottom = Sprite::create("wood.png");
+    bottom->runAction(RotateBy::create(0,90));
+    bottom->setTag(666);
     wood2->setScaleY(2.0f);
     wood3->setScaleY(2.0f);
     wood2->runAction(RotateBy::create(0,-15));
     wood3->runAction(RotateBy::create(0,15));
-    auto hole_body = PhysicsBody::createCircle(hole->getContentSize().width/2);
+    auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     auto wood2_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     auto wood3_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
-    hole_body->setDynamic(false);
+    bottom_body->setDynamic(false);
     wood2_body->setDynamic(false);
     wood3_body->setDynamic(false);
-    hole_body->setContactTestBitmask(0x66);
+    bottom_body->setContactTestBitmask(0x66);
     wood2_body->setContactTestBitmask(0x66);
     wood3_body->setContactTestBitmask(0x66);
 
-    hole->setPhysicsBody(hole_body);
+    bottom->setPhysicsBody(bottom_body);
     wood2->setPhysicsBody(wood2_body);
     wood3->setPhysicsBody(wood3_body);
-    hole->setPosition(origin_size+Vec2(vis_size.width-80,vis_size.height/2-45));
+    bottom->setPosition(origin_size+Vec2(vis_size.width-76,vis_size.height/2-20));
     Hole_Position= origin_size+Vec2(vis_size.width-80,vis_size.height/2);
     wood2->setPosition(Hole_Position+Vec2(-30,17));
     wood3->setPosition(wood2->getPosition()+Vec2(65,0));
-    this->addChild(hole);
+    this->addChild(bottom);
     this->addChild(wood2);
     this->addChild(wood3);
-    hole->setVisible(false);
+    bottom->setVisible(false);
 
     ParticleSystem* smoke = ParticleSmoke ::create();
     smoke->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
-    smoke->setPosition(Hole_Position-Vec2(0,40));
+    smoke->setPosition(Hole_Position-Vec2(0,25));
     this->addChild(smoke);
 
 }
@@ -242,14 +251,8 @@ void GoScene::Start_gravity() {
                              vis_size.height+origin_size.y));
         this->addChild(ps,1);
         Device::setAccelerometerEnabled(true); //启动重力传感器
-
-        auto ExitItem = MenuItemFont::create("Back",CC_CALLBACK_1(GoScene::Go_back,this));
-        ExitItem->setPosition(Vec2(vis_size.width+origin_size.x-50,
-                               20+origin_size.y));
-        auto Menu = Menu::create(ExitItem,NULL);
-        Menu->setPosition(Vec2::ZERO);
-        this->addChild(Menu,2);
 }
+
 void GoScene::Go_back(cocos2d::Ref *pSender) {
     Director::getInstance()->popScene();
     Device::setAccelerometerEnabled(false);
