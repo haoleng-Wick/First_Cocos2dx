@@ -104,10 +104,10 @@ void WelcomeScene::Menu_StartCallback(cocos2d::Ref *pSender) {
     ParticleSystem* ps = ParticleFlower ::create();
     ps->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
     ps->setPosition(Vec2(vis_size.width/2+origin_size.x,
-                         vis_size.height/2+origin_size.y-100));
+                         vis_size.height/2+origin_size.y+80));
     this->addChild(ps,1);
     auto callfunc = CallFunc::create(std::bind(&WelcomeScene::init_herostart,this));
-    hero->runAction(Sequence::create(DelayTime::create(2),callfunc,NULL));
+    hero->runAction(Sequence::create(DelayTime::create(1),callfunc,NULL));
 }
 
 void WelcomeScene::Menu_OtherCallback(cocos2d::Ref *pSender) {
