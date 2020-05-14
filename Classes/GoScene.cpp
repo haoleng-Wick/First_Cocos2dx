@@ -29,7 +29,7 @@ bool GoScene::init() {
     mlabel->setColor(Color3B::GREEN);
     mlabel->setPosition(origin_size+Vec2(vis_size.width/2,vis_size.height-100));
     char x = 'o';
-    sprintf(buffer,"Let's G%c",x);
+    sprintf(buffer,"Let's G%c,move your finger!",x);
     mlabel->setString(buffer);
     mlabel->setVisible(true);
     this->addChild(mlabel,2);
@@ -105,11 +105,11 @@ void GoScene::music() {
 
     simpleAudioEngine->playEffect("music/good.mp3",false);
         auto rand = random(0,3);
-        if(rand==0){add_Position=origin_size+Vec2(10,vis_size.height-20);
+        if(rand==0){add_Position=origin_size+Vec2(10,vis_size.height/2-50);
                 arrow1->setVisible(true);arrow2->setVisible(false);arrow3->setVisible(false);}
-        else if(rand==1){add_Position=origin_size+Vec2(10,vis_size.height/2-20);
+        else if(rand==1){add_Position=origin_size+Vec2(10,vis_size.height/2-200);
             arrow1->setVisible(false);arrow2->setVisible(true);arrow3->setVisible(false);}
-        else {add_Position=origin_size+Vec2(vis_size.width-10,vis_size.height-20);
+        else {add_Position=origin_size+Vec2(10,vis_size.height/2-400);
             arrow1->setVisible(false);arrow2->setVisible(false);arrow3->setVisible(true);}
 }
 void GoScene::onEnter() {
@@ -125,10 +125,9 @@ void GoScene::add_arrows() {
 
     arrow2->setVisible(false);
     arrow3->setVisible(false);
-    arrow3->setScaleX(-1);
-    arrow1->setPosition(origin_size+Vec2(10,vis_size.height-20));
-    arrow2->setPosition(origin_size+Vec2(10,vis_size.height/2-20));
-    arrow3->setPosition(origin_size+Vec2(vis_size.width-10,vis_size.height-20));
+    arrow1->setPosition(origin_size+Vec2(10,vis_size.height/2-50));
+    arrow2->setPosition(origin_size+Vec2(10,vis_size.height/2-200));
+    arrow3->setPosition(origin_size+Vec2(10,vis_size.height/2-400));
 
     this->addChild(arrow1);this->addChild(arrow2);this->addChild(arrow3);
 }
