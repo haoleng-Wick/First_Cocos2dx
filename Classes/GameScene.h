@@ -22,8 +22,10 @@ private:
     cocos2d::Sprite* player;
     cocos2d::Sprite* bg1;
     cocos2d::Sprite* ground;
+    cocos2d::Sprite* top_bar;
     cocos2d::Label* label;
     int score;
+    int HP=1;
 
     bool left = false;bool right = false;
     bool isTouch = false;

@@ -85,8 +85,7 @@ void GameScene::initBackground() {
     SimpleAudioEngine::getInstance()->playBackgroundMusic("music/cano.mp3", true);
     label = Label::createWithTTF("0","fonts/Marker Felt.ttf",20);
     label->setColor(Color3B::RED);
-    label->setPosition(vis_size.width+ori_size.x-40,vis_size.height+ori_size.y-20);
-//    label->retain();//增加文字标签的索引计数
+    label->setPosition(vis_size.width+ori_size.x-80,vis_size.height+ori_size.y-20);
     this->addChild(label,2);
     bg1 = Sprite::create("background.jpg");
     bg1->setPosition(ori_size.x+vis_size.width/2,ori_size.y+vis_size.height/2);
@@ -97,6 +96,13 @@ void GameScene::initBackground() {
 
 void GameScene::addGround() {
     Box2DHelper::createEdge(world,vis_size.width,vis_size.height, nullptr);
+
+    top_bar = Sprite::create("ci.png");
+    top_bar->setPosition(ori_size+Vec2(vis_size.width/2,vis_size.height));
+    top_bar->setScaleX(2.0f);
+    this->addChild(top_bar);
+    Box2DHelper::createDeadborder(world,(ori_size.x+vis_size.width)/2,(ori_size.y+vis_size.height),
+            top_bar->getContentSize().width*2,top_bar->getContentSize().height/3,true,top_bar);
 
     auto bar = Sprite::create("bar.png");
     bar->setScaleX(1.25f);
@@ -171,14 +177,20 @@ void GameScene::BeginContact(b2Contact *contact) {
                 isContacted=true;
             if(spriteA==player) barsprite=spriteB;
             else barsprite =spriteA;
-            while (barsprite->getColor()!=Color3B(225,215,0) && barsprite!=ground){
-                SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
-                    barsprite->setColor(Color3B(225,215,0));
+
+            while (barsprite->getColor()!=Color3B::BLUE && barsprite!=ground){
+                if(barsprite!=top_bar){
+                    SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
+                }
+                    barsprite->setColor(Color3B::BLUE);
                 score++;
                 char str[128] = {'0'};
                 sprintf(str,"Score:%d",score);
                 label->setString(str);
                 label->setVisible(true);
+            }
+            if(barsprite==top_bar){
+                HP=0;
             }
         }
     }
@@ -192,6 +204,11 @@ void GameScene::EndContact(b2Contact *contact) {
     if(spriteA!= nullptr&&spriteB!= nullptr) {
         if (spriteA == player || spriteB == player) {
             isContacted= false;
+            if(spriteA==player){
+                spriteB->setColor(Color3B::YELLOW);
+            } else if(spriteB==player){
+                spriteA->setColor(Color3B::YELLOW);
+            }
         }
     }
 }
@@ -269,8 +286,10 @@ void GameScene::update(float delta) {
             this->addChild(player2,4);
             gameover = false;
         }
-        while (!gamelose && player->getPositionY()<-5+ori_size.y){//游戏结束
-            GameLose();
-            gamelose = true;
+        if (!gamelose){//游戏结束
+            if( player->getPositionY()<-5+ori_size.y ||HP==0) {
+                    GameLose();
+                    gamelose = true;
+            }
         }
     }

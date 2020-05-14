@@ -89,7 +89,7 @@ b2Body* Box2DHelper::createBar(b2World* world, float posX,
 
     auto box =world->CreateBody(&bodyDef);  //绑定刚体
     box->CreateFixture(&fixtureDef);
-    b2Vec2 vec2 = b2Vec2(0,1.3f);
+    b2Vec2 vec2 = b2Vec2(0,1.0f);
     box->SetLinearVelocity(vec2);
 
     return box;
@@ -128,7 +128,7 @@ b2Body* Box2DHelper::createEdge(b2World* world, float width,
                 float height,void* userData){
     float wall_thick =20;    //围墙厚度
 //    createBox(world,width/2,0,width,wall_thick,true,userData);//down
-    createBox(world,width/2,height,width,wall_thick,true,userData);//top
+//    createBox(world,width/2,height,width,wall_thick,true,userData);//top
     createBox(world,0,height/2,wall_thick,height,true,userData);//left
     createBox(world,width,height/2,wall_thick,height,true,userData);//right
     return nullptr;
