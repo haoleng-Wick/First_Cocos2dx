@@ -4,6 +4,7 @@
 
 #include <cocos/scripting/deprecated/CCDeprecated.h>
 #include "GameScene.h"
+#include "HelloWorldScene.h"
 
 
 USING_NS_CC;
@@ -125,9 +126,9 @@ void GameScene::addPlayer() {
 void GameScene::addBar(int i) {
         auto bar = Sprite::create("bar.png");
         bar->setScaleX(1.25f);
-        int r = random(10,225);
-        int g = random(1,214);
-        int b = random(1,225);
+        int r = random(10,215);
+        int g = random(1,210);
+        int b = random(1,220);
             bar->setColor(Color3B(r,g,b));
     if(i!=2){
         Box2DHelper::createBar(world,random(bar->getContentSize().width/2*1.25f,vis_size.width-bar->getContentSize().width/2*1.25f),
@@ -183,11 +184,7 @@ void GameScene::BeginContact(b2Contact *contact) {
                     SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
                 }
                     barsprite->setColor(Color3B::BLUE);
-                score++;
-                char str[128] = {'0'};
-                sprintf(str,"Score:%d",score);
-                label->setString(str);
-                label->setVisible(true);
+
             }
             if(barsprite==top_bar){
                 HP=0;
@@ -204,9 +201,9 @@ void GameScene::EndContact(b2Contact *contact) {
     if(spriteA!= nullptr&&spriteB!= nullptr) {
         if (spriteA == player || spriteB == player) {
             isContacted= false;
-            if(spriteA==player){
+            if(spriteA==player && spriteB!=ground){
                 spriteB->setColor(Color3B::YELLOW);
-            } else if(spriteB==player){
+            } else if(spriteB==player && spriteA!=ground){
                 spriteA->setColor(Color3B::YELLOW);
             }
         }
@@ -233,7 +230,7 @@ void GameScene::GameWin() {
 void GameScene::GameLose() {
     SimpleAudioEngine::getInstance()->playEffect("music/fail.mp3");
     SimpleAudioEngine::getInstance()->stopBackgroundMusic();
-    auto scene = WelcomeScene::createScene();
+    auto scene = HelloWorld::createScene();
     Director::getInstance()->replaceScene(TransitionFade::create(2.3f,scene));
 }
 
@@ -255,10 +252,15 @@ void GameScene::update(float delta) {
         if(b->GetPosition().y>(vis_size.height)/RATIO){
             s = (Sprite*)b->GetUserData();
             if(s!=NULL){
+                score++;
+                char str[128] = {'0'};
+                sprintf(str,"Score:%d",score);
+                label->setString(str);
+                label->setVisible(true);
                 s->removeFromParent();
             }
             world->DestroyBody(b);
-            if(score<=56)
+            if(score<=95)
                 addBar(0);
                 else if(next_add){
                     SimpleAudioEngine::getInstance()->stopBackgroundMusic();
