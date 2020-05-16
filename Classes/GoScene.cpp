@@ -65,7 +65,7 @@ bool GoScene::init() {
                                                         {
                                                             auto vec2 = Vec2((float)a->x,(float)a->y);
                                                             vec2.normalize();
-                                                            this->getScene()->getPhysicsWorld()->setGravity(vec2*500);
+                                                            this->getScene()->getPhysicsWorld()->setGravity(vec2*270);
                                                             return true;
                                                         });
     auto contact_listener=EventListenerPhysicsContact::create();
@@ -232,7 +232,7 @@ void GoScene::add_wubianxing(Vec2 vec1,Vec2 vec2) {
 
 void GoScene::add_edge() {
     Node* node =Node::create();
-    auto edges = PhysicsBody::createEdgeBox(vis_size,PHYSICSBODY_MATERIAL_DEFAULT,2);
+    auto edges = PhysicsBody::createEdgeBox(vis_size,PHYSICSBODY_MATERIAL_DEFAULT,4);
     node->setPosition(Vec2(vis_size.width/2+origin_size.x,vis_size.height/2+origin_size.y));
     node->setPhysicsBody(edges);
     this->addChild(node);
