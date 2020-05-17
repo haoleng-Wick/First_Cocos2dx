@@ -35,13 +35,12 @@ private:
 public:
     static cocos2d::Scene* createScene();
     virtual bool init();
-    virtual void update(float delta);
 
     void init_music();
     void init_Background();
     void init_Menu();
     void init_hero(float x);
-    void init_herostart();
+    void Replace_start();
 
     void Menu_ExitCallback(cocos2d::Ref* pSender);
     void Menu_StartCallback(cocos2d::Ref* pSender);

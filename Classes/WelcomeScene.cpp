@@ -23,7 +23,6 @@ bool WelcomeScene::init() {
     _engine = nullptr;
     _audioID = 0;
     _loop = false;
-    this->scheduleUpdate();
     init_music();
     init_Background();
     init_Menu();
@@ -76,22 +75,22 @@ void WelcomeScene::init_Menu() {
 void WelcomeScene::init_hero(float x) {
         hero = Hero::create();
         hero->setPosition(Vec2(x,vis_size.height/3+origin_size.y));
-    auto hero_cache = SpriteFrameCache::getInstance();
-    hero_cache->addSpriteFramesWithFile("static.plist");
-    Vector<SpriteFrame* > stands(10);
-    char stand_str[200] = {};
-    for(int i =1;i<=10;i++){
-        sprintf(stand_str,"Idle%d.png",i);
-        auto hero_frame = hero_cache->getSpriteFrameByName(stand_str);
-        stands.pushBack(hero_frame);
-    }
-    auto stand_animation = Animation::createWithSpriteFrames(stands,0.1f);
-    stand_animate = Animate::create(stand_animation);
-    hero->runAction(RepeatForever::create(stand_animate));
-        this->addChild(hero,1);
+        auto hero_cache = SpriteFrameCache::getInstance();
+        hero_cache->addSpriteFramesWithFile("static.plist");
+        Vector<SpriteFrame* > stands(10);
+        char stand_str[200] = {};
+        for(int i =1;i<=10;i++){
+            sprintf(stand_str,"Idle%d.png",i);
+            auto hero_frame = hero_cache->getSpriteFrameByName(stand_str);
+            stands.pushBack(hero_frame);
+        }
+        auto stand_animation = Animation::createWithSpriteFrames(stands,0.1f);
+        stand_animate = Animate::create(stand_animation);
+        hero->runAction(RepeatForever::create(stand_animate));
+            this->addChild(hero,1);
 }
 
-void WelcomeScene::init_herostart() {
+void WelcomeScene::Replace_start() {
     auto scene = GameScene::createScene();
     Director::getInstance()->replaceScene(TransitionFadeDown::create(1,scene));
 }
@@ -99,34 +98,37 @@ void WelcomeScene::init_herostart() {
 //菜单事件
 void WelcomeScene::Menu_StartCallback(cocos2d::Ref *pSender) {
     _engine->stopBackgroundMusic();
-
     _engine->playEffect("music/bt.mp3",_loop);
+
+    auto sprite = Sprite::create("777.png");
+    sprite->setScale(0.3f);
+    sprite->setPosition(origin_size+Vec2(vis_size.width-80,vis_size.height-60));
+    sprite->runAction(Sequence::create(JumpTo::create(2.5f,Vec2(vis_size.width/2+origin_size.x,
+                                                                vis_size.height/2+origin_size.y+100),100,1),RemoveSelf::create(true),NULL));
+    this->addChild(sprite);
     ParticleSystem* ps = ParticleFlower ::create();
     ps->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
     ps->setPosition(Vec2(vis_size.width/2+origin_size.x,
                          vis_size.height/2+origin_size.y+80));
     this->addChild(ps,1);
-    auto callfunc = CallFunc::create(std::bind(&WelcomeScene::init_herostart,this));
-    hero->runAction(Sequence::create(DelayTime::create(1),callfunc,NULL));
+    auto callfunc = CallFunc::create(std::bind(&WelcomeScene::Replace_start,this));
+    hero->runAction(Sequence::create(DelayTime::create(3),callfunc,NULL));
 }
 
 void WelcomeScene::Menu_OtherCallback(cocos2d::Ref *pSender) {
     _engine->playEffect("music/bt.mp3",_loop);
-    float xx = hero->getPositionX();
-    hero->removeFromParent();
-    init_hero(xx);
 
+    auto sprite = Sprite::create("basketball.png");
+    sprite->setScale(0.25f);
+    sprite->setPosition(hero->getPosition());
+    sprite->runAction(Sequence::create(JumpTo::create(1.5f,Vec2(vis_size.width/2+origin_size.x,
+                                            vis_size.height/2+origin_size.y),100,1),RemoveSelf::create(true),NULL));
+    this->addChild(sprite);
     auto scene = GoScene::createScene();
-    Director::getInstance()->pushScene(TransitionFadeUp::create(1,scene));
+    Director::getInstance()->pushScene(TransitionFade::create(4,scene));
 }
 
 void WelcomeScene::Menu_ExitCallback(cocos2d::Ref *pSender) {
     Director::getInstance()->end();
 }
 
-void WelcomeScene::update(float delta) {
-    float x= hero->getPositionX()-hero->getContentSize().width/5;
-    if(x>origin_size.x+vis_size.width){
-        hero->setPositionX(origin_size.x-hero->getContentSize().width/5);
-    }
-}
