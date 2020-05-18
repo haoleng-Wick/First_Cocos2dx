@@ -13,9 +13,9 @@ b2World *Box2DHelper::createWorld(){
 b2Body* Box2DHelper::createBox(b2World* world, float posX,
             float posY,float width, float height,
             bool isStatic,void* userData){
-    b2BodyDef bodyDef;              //声明
-    bodyDef.type=isStatic?b2BodyType ::b2_staticBody : b2BodyType ::b2_dynamicBody;
-    bodyDef.position.Set((posX+or_sizex)/RATIO,(posY+or_sizey)/RATIO);
+    b2BodyDef bodyDef;              //创建body定义
+    bodyDef.type=isStatic?b2BodyType ::b2_staticBody : b2BodyType ::b2_dynamicBody;//是否静态
+    bodyDef.position.Set((posX+or_sizex)/RATIO,(posY+or_sizey)/RATIO); //位置
     bodyDef.fixedRotation= false;
     bodyDef.userData=userData;  //绑定精灵
 
@@ -23,15 +23,15 @@ b2Body* Box2DHelper::createBox(b2World* world, float posX,
     shape.SetAsBox(width/RATIO/2,height/RATIO/2);
 
     b2FixtureDef fixtureDef;        //物理属性
-    fixtureDef.density=1;
-    fixtureDef.restitution=0.4f;
-    fixtureDef.friction=0.5f;
+    fixtureDef.density=1;	//密度
+    fixtureDef.restitution=0.4f;//恢复力
+    fixtureDef.friction=0.5f;  //摩擦力
     fixtureDef.filter.groupIndex = WORLD_BORDER;
     fixtureDef.filter.categoryBits = WORLD_BORDER;
     fixtureDef.filter.maskBits = BALL | BORDER;
     fixtureDef.shape=&shape;
 
-    auto box =world->CreateBody(&bodyDef);  //绑定刚体
+    auto box =world->CreateBody(&bodyDef);  //创建刚体
     box->CreateFixture(&fixtureDef);
 
     return box;
