@@ -72,9 +72,13 @@ bool HelloWorld::init()
     {
         sprite->setScale(1.5f);
         sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+        auto replace = CallFunc::create(std::bind( &HelloWorld::init_music, this));
+        sprite->runAction(Sequence::create(DelayTime::create(2),replace,NULL));
 
         this->addChild(sprite, 0);
     }
+
+
 
     ParticleSystem* snow = ParticleSnow ::create();
     snow->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
@@ -90,8 +94,13 @@ bool HelloWorld::init()
     return true;
 }
 
+void HelloWorld::init_music() {
+    simpleAudioEngine = SimpleAudioEngine::getInstance();
+    simpleAudioEngine->playBackgroundMusic("music/mei.mp3",false);
+}
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
+    simpleAudioEngine->stopBackgroundMusic();
     auto Scene = WelcomeScene::createScene();
     Director::getInstance()->replaceScene(TransitionFade::create(1,Scene));
 }

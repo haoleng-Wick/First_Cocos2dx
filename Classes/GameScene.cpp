@@ -228,8 +228,6 @@ void GameScene::GameWin() {
     Director::getInstance()->replaceScene(TransitionFade::create(2,scene));
 }
 void GameScene::GameLose() {
-    SimpleAudioEngine::getInstance()->playEffect("music/fail.mp3");
-    SimpleAudioEngine::getInstance()->stopBackgroundMusic();
     auto scene = HelloWorld::createScene();
     Director::getInstance()->replaceScene(TransitionFade::create(2.3f,scene));
 }
@@ -290,6 +288,8 @@ void GameScene::update(float delta) {
         }
         if (!gamelose){//游戏结束
             if( player->getPositionY()<-5+ori_size.y ||HP==0) {
+                    SimpleAudioEngine::getInstance()->playEffect("music/fail.mp3");
+                    SimpleAudioEngine::getInstance()->stopBackgroundMusic();
                     GameLose();
                     gamelose = true;
             }

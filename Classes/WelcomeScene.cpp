@@ -37,6 +37,7 @@ void WelcomeScene::init_music() {
     _engine = SimpleAudioEngine::getInstance();
     _engine->preloadBackgroundMusic("music/cano.mp3");
     _engine->preloadBackgroundMusic("welcome_bgm.mp3");
+    _engine->preloadBackgroundMusic("mei.mp3");
     _engine->preloadEffect("music/bt.mp3");
     _engine->preloadEffect("music/down.ogg");
     _engine->preloadEffect("music/fail.mp3");
