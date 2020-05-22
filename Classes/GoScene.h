@@ -23,7 +23,9 @@ private:
     cocos2d::Vec2 Hole_Position;
     cocos2d::Vec2 add_Position = origin_size+cocos2d::Vec2(10,vis_size.height/2-50);
     cocos2d::Sprite* arrow1;cocos2d::Sprite* arrow2;cocos2d::Sprite* arrow3;
+    cocos2d::Sprite* bottom;cocos2d::Sprite* wood2;cocos2d::Sprite* wood3;
     SimpleAudioEngine * simpleAudioEngine;
+    cocos2d::ParticleSystem* smoke;
 public:
     static cocos2d::Scene* createScene();
     virtual bool init();

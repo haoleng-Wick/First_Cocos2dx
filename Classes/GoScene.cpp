@@ -133,13 +133,16 @@ void GoScene::add_arrows() {
 }
 
 void GoScene::add_hole() {
-    auto wood2 = Sprite::create("wood.png");
-    auto wood3 = Sprite::create("wood.png");
-    auto bottom = Sprite::create("wood.png");
+    wood2 = Sprite::create("wood.png");
+    wood3 = Sprite::create("wood.png");
+    bottom = Sprite::create("wood.png");
     bottom->runAction(RotateBy::create(0,90));
     bottom->setTag(666);
     wood2->setScaleY(2.0f);
     wood3->setScaleY(2.0f);
+    bottom->setOpacity(100);
+    wood2->setOpacity(100);
+    wood3->setOpacity(100);
     wood2->runAction(RotateBy::create(0,-15));
     wood3->runAction(RotateBy::create(0,15));
     auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
@@ -155,18 +158,20 @@ void GoScene::add_hole() {
     bottom->setPhysicsBody(bottom_body);
     wood2->setPhysicsBody(wood2_body);
     wood3->setPhysicsBody(wood3_body);
-    bottom->setPosition(origin_size+Vec2(vis_size.width-76,vis_size.height/2-20));
-    Hole_Position= origin_size+Vec2(vis_size.width-80,vis_size.height/2);
-    wood2->setPosition(Hole_Position+Vec2(-30,17));
-    wood3->setPosition(wood2->getPosition()+Vec2(65,0));
+    bottom->setPosition(origin_size+Vec2(vis_size.width-116,vis_size.height/2-20));
+    Hole_Position= origin_size+Vec2(vis_size.width-120,vis_size.height/2);
+    wood2->setPosition(Hole_Position+Vec2(-31,12));
+    wood3->setPosition(wood2->getPosition()+Vec2(67,0));
     this->addChild(bottom);
     this->addChild(wood2);
     this->addChild(wood3);
-    bottom->setVisible(false);
+    bottom->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
+    wood2->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
+    wood3->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
 
-    ParticleSystem* smoke = ParticleSmoke ::create();
+    smoke = ParticleGalaxy ::create();
     smoke->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
-    smoke->setPosition(Hole_Position-Vec2(0,25));
+    smoke->setPosition(Hole_Position-Vec2(0,20));
     this->addChild(smoke);
 
 }
@@ -186,7 +191,7 @@ void GoScene::add_bar(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_ball(Vec2 vec1,Vec2 vec2) {
     auto ball = Sprite::create("basketball.png");
-    ball->setScale(0.25f);
+    ball->setScale(0.375f);
     auto ball_body = PhysicsBody::createCircle(ball->getContentSize().width/2,
                                             PhysicsMaterial(1.5f,0.8f,0.2f));
     ball_body->setDynamic(true);
@@ -199,7 +204,7 @@ void GoScene::add_ball(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_box(Vec2 vec1,Vec2 vec2) {
     auto box = Sprite::create("smile.png");
-    box->setScale(0.5f);
+    box->setScale(0.75f);
     auto box_body = PhysicsBody::createBox(box->getContentSize(),
             PhysicsMaterial(3.0f,0.7f,0.4f));
     box_body->setDynamic(true);
@@ -212,7 +217,7 @@ void GoScene::add_box(Vec2 vec1,Vec2 vec2) {
 }
 void GoScene::add_wubianxing(Vec2 vec1,Vec2 vec2) {
     auto sjx = Sprite::create("sjx.png");
-    sjx->setScale(0.5f);
+    sjx->setScale(0.75f);
     float x = sjx->getContentSize().width;
     float y = sjx->getContentSize().height;
     Point vertex[] ={
@@ -242,8 +247,15 @@ void GoScene::add_edge() {
 void GoScene::Start_gravity() {
         count=102;
         simpleAudioEngine->playBackgroundMusic("music/welcome_bgm.mp3", false);
+        smoke->runAction(RemoveSelf::create(true));
+        bottom->runAction(RemoveSelf::create(true));wood2->runAction(RemoveSelf::create(true));wood3->runAction(RemoveSelf::create(true));
         mlabel->setVisible(false);
         arrow1->setVisible(false); arrow2->setVisible(false); arrow3->setVisible(false);
+        ParticleSystem* ps0 = ParticleRain::create();
+        ps0->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
+        ps0->setPosition(Vec2(vis_size.width/2+origin_size.x,
+                             vis_size.height-2+origin_size.y));
+        this->addChild(ps0,1);
         ParticleSystem* ps = ParticleRain::create();
         ps->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
         ps->setPosition(Vec2(vis_size.width/2+origin_size.x,
