@@ -75,9 +75,9 @@ bool GoScene::init() {
             auto spriteB= contact.getShapeB()->getBody()->getNode();
             if(spriteA && spriteB){
                 if(spriteA->getTag()==666) {
-                    spriteB->runAction(Sequence::create(FadeOut::create(1), RemoveSelf::create(true),CallFunc::create(std::bind( &GoScene::music, this)), NULL));
+                    spriteB->runAction(Sequence::create(CallFunc::create(std::bind( &GoScene::music, this)), RemoveSelf::create(true), NULL));
                 }else if(spriteB->getTag()==666) {
-                    spriteA->runAction(Sequence::create(FadeOut::create(1), RemoveSelf::create(true), CallFunc::create(std::bind( &GoScene::music, this)),NULL));
+                    spriteA->runAction(Sequence::create(CallFunc::create(std::bind( &GoScene::music, this)), RemoveSelf::create(true), NULL));
                 }
             }
         }
@@ -102,6 +102,11 @@ void GoScene::music() {
         sprintf(buffer,"Cool,%d people",score);
     }
     mlabel->setString(buffer);
+
+    auto boom = ParticleExplosion ::create();
+    boom->setSpeed(300);
+    boom->setPosition(Hole_Position+Vec2(0,10));
+    this->addChild(boom);
 
     simpleAudioEngine->playEffect("music/good.mp3",false);
         auto rand = random(0,3);
@@ -145,15 +150,15 @@ void GoScene::add_hole() {
     wood3->setOpacity(100);
     wood2->runAction(RotateBy::create(0,-15));
     wood3->runAction(RotateBy::create(0,15));
-    auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
+    auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0,0.1f));
     auto wood2_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     auto wood3_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     bottom_body->setDynamic(false);
     wood2_body->setDynamic(false);
     wood3_body->setDynamic(false);
-    bottom_body->setContactTestBitmask(0x66);
-    wood2_body->setContactTestBitmask(0x66);
-    wood3_body->setContactTestBitmask(0x66);
+    bottom_body->setContactTestBitmask(0x64);
+    wood2_body->setContactTestBitmask(0x64);
+    wood3_body->setContactTestBitmask(0x64);
 
     bottom->setPhysicsBody(bottom_body);
     wood2->setPhysicsBody(wood2_body);
