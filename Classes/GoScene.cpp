@@ -29,7 +29,7 @@ bool GoScene::init() {
     mlabel->setColor(Color3B::GREEN);
     mlabel->setPosition(origin_size+Vec2(vis_size.width/2,vis_size.height-100));
     char x = 'o';
-    sprintf(buffer,"Let's G%c,move your finger!",x);
+    sprintf(buffer,"G%c",x);
     mlabel->setString(buffer);
     mlabel->setVisible(true);
     this->addChild(mlabel,2);
@@ -43,7 +43,7 @@ bool GoScene::init() {
     };
     Listener->onTouchEnded=[this](Touch* touch,Event *event){
         touch_end=Vec2(touch->getLocation().x,touch->getLocation().y);
-        if(count<=100){
+        if(count<=50){
             count++;
             auto ve = touch_end-touch_begin;
             auto select = random(1,50);
@@ -56,7 +56,8 @@ bool GoScene::init() {
                 add_box(add_Position,ve);
             else if(num == 3)
                 add_wubianxing(add_Position,ve);
-        } else if(count==101){
+        } else if(count==51){
+            count = 52;
             Start_gravity();
         }
         return true;
@@ -70,7 +71,7 @@ bool GoScene::init() {
                                                         });
     auto contact_listener=EventListenerPhysicsContact::create();
     contact_listener->onContactBegin = [this](PhysicsContact& contact){
-        if(count<=100){
+        if(count<=50){
             auto spriteA= contact.getShapeA()->getBody()->getNode();
             auto spriteB= contact.getShapeB()->getBody()->getNode();
             if(spriteA && spriteB){
@@ -90,21 +91,23 @@ bool GoScene::init() {
 }
 void GoScene::music() {
     score++;
-    if(score ==1){
-        sprintf(buffer,"%d person was sent away",score);
-    }else if(score >=2 && score <15){
-        sprintf(buffer,"just %d people were sent away",score);
-    }else if(score>=15 && score <30){
+    if (score == 1) {
+        sprintf(buffer, "%d person was sent away", score);
+    } else if (score >= 2 && score < 10) {
+        sprintf(buffer, "just %d people", score);
+    } else if (score >= 10 && score < 20) {
         mlabel->setColor(Color3B::RED);
-        sprintf(buffer,"wa ,%d people were sent away",score);
-    }else{
+        sprintf(buffer, "Nice  %d people",score);
+    } else if(score == 21) {
         mlabel->setColor(Color3B::YELLOW);
-        sprintf(buffer,"Cool,%d people",score);
+        int y =6;
+        sprintf(buffer, "66%d,you are good",y);
+        score = 22;
     }
-    mlabel->setString(buffer);
 
+    mlabel->setString(buffer);
     auto boom = ParticleExplosion ::create();
-    boom->setSpeed(300);
+    boom->setSpeed(500);
     boom->setPosition(Hole_Position+Vec2(0,10));
     this->addChild(boom);
 
@@ -150,7 +153,7 @@ void GoScene::add_hole() {
     wood3->setOpacity(100);
     wood2->runAction(RotateBy::create(0,-15));
     wood3->runAction(RotateBy::create(0,15));
-    auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0,0.1f));
+    auto bottom_body = PhysicsBody::createBox(bottom->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     auto wood2_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     auto wood3_body = PhysicsBody::createBox(wood2->getContentSize(),PhysicsMaterial(1.2f,0.2f,0.1f));
     bottom_body->setDynamic(false);
@@ -173,11 +176,6 @@ void GoScene::add_hole() {
     bottom->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
     wood2->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
     wood3->runAction(RepeatForever::create(Sequence::create(FadeOut::create(3),DelayTime::create(2),FadeIn::create(3),  NULL)));
-
-    smoke = ParticleGalaxy ::create();
-    smoke->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
-    smoke->setPosition(Hole_Position-Vec2(0,20));
-    this->addChild(smoke);
 
 }
 
@@ -250,11 +248,12 @@ void GoScene::add_edge() {
 }
 
 void GoScene::Start_gravity() {
-        count=102;
         simpleAudioEngine->playBackgroundMusic("music/welcome_bgm.mp3", false);
-        smoke->runAction(RemoveSelf::create(true));
         bottom->runAction(RemoveSelf::create(true));wood2->runAction(RemoveSelf::create(true));wood3->runAction(RemoveSelf::create(true));
-        mlabel->setVisible(false);
+        char j ='e';
+        sprintf(buffer,"Shake your phon%c",j);
+        mlabel->setString(buffer);
+        mlabel->runAction(FadeOut::create(5));
         arrow1->setVisible(false); arrow2->setVisible(false); arrow3->setVisible(false);
         ParticleSystem* ps0 = ParticleRain::create();
         ps0->setTexture(Director::getInstance()->getTextureCache()->addImage("fire.png"));
