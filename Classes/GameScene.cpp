@@ -35,13 +35,13 @@ bool GameScene::init() {
     Touch_Listener->onTouchBegan = [this](Touch *touch,Event* event){
         isTouch=true;
         if(isContacted)  {      //在板上的话就可以跑动了
-        auto run = SpriteFrameCache::getInstance()->getSpriteFrameByName("stand.png");
+        auto run = SpriteFrameCache::getInstance()->getSpriteFrameByName("Idle__003.png");
         player->setSpriteFrame(run);
         player->stopAllActions();
         Vector<SpriteFrame *> runs(9);
         char run_str[160] = {};
-        for (int i = 1; i <= 9; i++) {
-                sprintf(run_str, "Run%d.png", i);
+        for (int i = 0; i <= 8; i++) {
+                sprintf(run_str, "Run__00%d.png", i);
                 auto hero_frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(run_str);
                 runs.pushBack(hero_frame);
             }
@@ -120,7 +120,7 @@ void GameScene::addPlayer() {
     this->addChild(player,2,11);
     Box2DHelper::createHero(world,vis_size.width/2,
                             15+4*(vis_size.height/5)+30,
-                            26,60,false,player);
+                            26,58,false,player);
 }
 
 void GameScene::addBar(int i) {
@@ -145,7 +145,7 @@ void GameScene::addBar(int i) {
 void GameScene::addDoor() {
     auto door = Sprite::create("door.png");
     door->setScale(1.5f);
-    door->setPosition(400+ori_size.x,50+ori_size.y);
+    door->setPosition(ori_size.x+vis_size.width-150,50+ori_size.y);
     this->addChild(door,1);
     auto fu_=Sequence::create(MoveBy::create(1,Vec2(0,10)),MoveBy::create(1,Vec2(0,-10)),NULL);
     door->runAction(RepeatForever::create(fu_));
@@ -212,15 +212,27 @@ void GameScene::EndContact(b2Contact *contact) {
 
 void GameScene::logic() {
     if(!isContacted){
-        auto jump = SpriteFrameCache::getInstance()->getSpriteFrameByName("fall.png");
-        player->stopAllActions();
-        player->setSpriteFrame(jump);
+        if(HP!=0) {
+            auto jump = SpriteFrameCache::getInstance()->getSpriteFrameByName("Glide_000.png");
+            player->stopAllActions();
+            player->setSpriteFrame(jump);
+        } else if (HP==0){
+            auto lie = SpriteFrameCache::getInstance()->getSpriteFrameByName("Dead__009.png");
+            player -> stopAllActions();
+            player->setSpriteFrame(lie);
+        }
     }else if(!isTouch && isContacted){
-            auto stand = SpriteFrameCache::getInstance()->getSpriteFrameByName("stand.png");
+            auto stand = SpriteFrameCache::getInstance()->getSpriteFrameByName("Idle__003.png");
             player->stopAllActions();
             player->setSpriteFrame(stand);
-    }
+            if(HP==0){
+                auto lie = SpriteFrameCache::getInstance()->getSpriteFrameByName("Dead__009.png");
+                player -> stopAllActions();
+                player->setSpriteFrame(lie);
+            }
 }
+}
+
 
 void GameScene::GameWin() {
     SimpleAudioEngine::getInstance()->stopBackgroundMusic();
@@ -270,13 +282,13 @@ void GameScene::update(float delta) {
                 }
             }
         }
-        while ( gameover && player->getPositionX()>400+ori_size.x
+        while ( gameover && player->getPositionX()>vis_size.width+ori_size.x-150
                     && player->getPositionX()<450+ori_size.x
                     && player->getPositionY()<=50){         //主角到达传送门的判断
 
             player_win = true;
             auto player2=Sprite::create("000.png");
-            player2->setPosition(400+ori_size.x,45);
+            player2->setPosition(vis_size.width+ori_size.x-150,45);
             player2->setScale(0.3f);
             auto next = Spawn::create(RotateBy::create(3,360*3),ScaleBy::create(3, 0, 0),
                                       FadeOut::create(3),NULL);
