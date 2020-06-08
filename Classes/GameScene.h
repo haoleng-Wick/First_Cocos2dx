@@ -32,7 +32,6 @@ private:
     bool isContacted = false;
     bool next_add = true;       //添加胜利之后界面的标志
     bool player_win = false;
-    bool player_died = false;
     bool gameover = false;
     bool gamelose = false;
 

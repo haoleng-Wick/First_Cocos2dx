@@ -180,8 +180,8 @@ void GameScene::BeginContact(b2Contact *contact) {
             else barsprite =spriteA;
 
             while (barsprite->getColor()!=Color3B::BLUE && barsprite!=ground){
-                if(barsprite!=top_bar){
-                    SimpleAudioEngine::getInstance()->playEffect("music/down.ogg",false);
+                if(barsprite!=top_bar && barsprite->getColor()!=Color3B::YELLOW){
+                    SimpleAudioEngine::getInstance()->playEffect("music/biu.mp3",false);
                 }
                     barsprite->setColor(Color3B::BLUE);
 
